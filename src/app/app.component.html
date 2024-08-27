@@ -1,41 +1,4 @@
-<div class="container">
-  <div class="header">
-    <div class="order">
-      <mat-form-field>
-        <mat-label> Order </mat-label>
-        <mat-select [formControl]="orderFormControl">
-          <mat-option *ngFor="let order of orderOptions" [value]="order.value">
-            {{ order.label }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      
-      <button mat-raised-button *ngIf="isVisualizing()" (click)="isVisualizing.set(false)">
-        <mat-icon> close </mat-icon>
-        Cancel
-      </button>
-      <button mat-raised-button *ngIf="!isVisualizing()" (click)="isVisualizing.set(true)">
-        Visualize
-      </button>
-    </div>
-  </div>
+<div class="container1">
+  <app-header ></app-header>
 
-  <div class="array-input" [class.error]="arrAsStringFormControl.invalid">
-    <mat-form-field>
-      <input matInput [formControl]="arrAsStringFormControl" placeholder="Ex: [1,2,3,null,4]" />
-    </mat-form-field>
-  </div>
-
-  <div class="svg-container">
-    <svg #svg>
-      <g #gContainer>
-        <ng-container *ngFor="let path of pathsSvg(); trackBy: trackByIndex">
-          <g [attr.x1]="path.x1" [attr.y1]="path.y1" [attr.x2]="path.x2" [attr.y2]="path.y2"></g>
-        </ng-container>
-        <ng-container *ngFor="let node of nodesSvg(); trackBy: trackByIndex">
-          <g [attr.val]="node.val" [attr.x]="node.x" [attr.y]="node.y" [attr.status]="node.status"></g>
-        </ng-container>
-      </g>
-    </svg>
-  </div>
 </div>
