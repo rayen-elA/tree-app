@@ -1,7 +1,16 @@
+<div id="titre">{{title}}</div>
 <div class="container1">
-  <app-header ></app-header>
+  <button  class="btn" (Onclick)="addNode()">Add Node</button>
+    <input [(ngModel)]="newValue" type="number" placeholder="Enter node value" />
+  <button (OnClick)="deleteNode()" class="btn">Delete Node</button>
+    <input [(ngModel)]="newValue" type="number" placeholder="Enter node value" />
+  <button (OnClick)="searchNode()" class="btn">Search DFS</button>
+    <input [(ngModel)]="newValue" type="number" placeholder="Enter node value" />
 
 </div>
-<div class="container1">
-  <app-body></app-body>
+<div class="container" >
+  <h2>Tree Visualization:</h2>
+  <div class="tree-container">
+    <app-tree-node *ngIf="tree" [node]="tree"></app-tree-node>
+  </div>
 </div>
