@@ -1,0 +1,30 @@
+.node {
+    display: inline-block;
+    padding: 5px;
+    margin: 2px;
+    border: 1px solid #000;
+    border-radius: 3px;
+    background-color: #f0f0f0;
+  }
+  
+  .children {
+    margin-left: 20px;
+  }
+  
+  .child {
+    margin-top: 5px;
+  }
+  
+  .tree-container {
+    margin-top: 20px;
+  }
+  /* new-folder/new-component/new-component.component.css */
+div {
+  margin: 5px;
+  padding: 5px;
+  border: 1px solid #ddd;
+}
+
+app-tree-node {
+  display: block;
+}
