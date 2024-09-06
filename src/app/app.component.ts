@@ -15,6 +15,11 @@ export class AppComponent {
 
   constructor() {
     this.treeVisService = new TreeVisService(this.tree);
+    console.log('Initial tree:', this.tree);
+    this.tree = new TreeNode(1);
+    this.tree.setLeft(new TreeNode(2));
+    this.tree.setRight(new TreeNode(3));
+    console.log('Tree structure:', this.tree);
   }
 
   addNode(): void {

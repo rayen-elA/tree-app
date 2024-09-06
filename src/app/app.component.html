@@ -10,7 +10,7 @@
 </div>
 <div class="container" >
   <h2>Tree Visualization:</h2>
-  <div class="tree-container">
-    <app-tree-node *ngIf="tree" [node]="tree"></app-tree-node>
+  <div class="tree-container" *ngIf="tree">
+    <app-tree-node  [node]="tree"></app-tree-node>
   </div>
 </div>
