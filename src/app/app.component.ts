@@ -9,31 +9,26 @@ export class AppComponent {
   title = 'tree-app';
   tree: TreeNode | null = null;
   treeVisService: TreeVisService;
-  newValue: number | null = null;  // Value to add to the tree
-  treeDisplay: string = '';
-  searchPath: number[] = []; // Path for search
+  newValue: number | null = null;  
+  searchPath: number[] = [];  
+  displayPath: string = ''; 
 
   constructor() {
     this.treeVisService = new TreeVisService(this.tree);
-    console.log('Initial tree:', this.tree);
-    this.tree = new TreeNode(1);
-    this.tree.setLeft(new TreeNode(2));
-    this.tree.setRight(new TreeNode(3));
-    console.log('Tree structure:', this.tree);
+ 
   }
 
   addNode(): void {
     if (this.newValue !== null) {
       this.tree = this.treeVisService.addNode(this.tree, this.newValue);
-      this.updateTreeDisplay();
     } else {
       console.error('New value is not defined');
     }
   }
+
   deleteNode(): void {
     if (this.newValue !== null) {
       this.tree = this.treeVisService.deleteNode(this.tree, this.newValue);
-      this.updateTreeDisplay();
     } else {
       console.error('Value to delete is not defined');
     }
@@ -43,22 +38,13 @@ export class AppComponent {
     if (this.newValue !== null) {
       this.searchPath = [];
       const found = this.treeVisService.searchTreeDFS(this.tree, this.newValue, this.searchPath);
-      if (found) {
-        console.log(`Node with value ${this.newValue} found at path: ${this.searchPath.join(' -> ')}`);
-      } else {
-        console.log(`Node with value ${this.newValue} not found`);
-      }
-      this.updateTreeDisplay();
+      this.displayPath = found ? this.searchPath.join(' -> ') : "Node not found";
     } else {
       console.error('Value to search is not defined');
     }
   }
-
-  updateTreeDisplay(): void {
-    this.treeDisplay = this.treeVisService.treeToString(this.tree);
-  }
-   
 }
+
 export class TreeNode {
   private val: number|null;
   private left: TreeNode | null;
@@ -167,14 +153,14 @@ private searchTree(current: TreeNode | null, val: number, parent: TreeNode | nul
       parent = current;
       
       if (currentValue !== null && val < currentValue) {
-          current = current.getLeft();  // Move left
+          current = current.getLeft();   
       } else {
-          current = current.getRight();  // Move right
+          current = current.getRight();  
       }
   }
   
   console.log(`Sorry, ${val} doesn't exist`);
-  return false;  // Value not found
+  return false;   
 }
 
 public deleteNode(tree: TreeNode | null, val: number): TreeNode | null {
@@ -182,126 +168,121 @@ public deleteNode(tree: TreeNode | null, val: number): TreeNode | null {
   let parent: TreeNode | null = null;
 
   if (tree === null) {
-      console.log("Tree is empty, nothing to delete");
-      return null;
+    console.log("Tree is empty, nothing to delete");
+    return null;
+  }
+
+  const result = this.searchTree(tree, val, parent);
+  if (typeof result === 'boolean') {
+    return tree;
   } else {
-      const result = this.searchTree(tree, val, parent);
-      if (typeof result === 'boolean') {
-          return tree;
+    parent = result;
+    if (parent !== null) {
+      // Handle cases when the node to delete is a left or right child
+      if (parent.getLeft() !== null && parent.getLeft()!.getVal() === val) {
+        current = parent.getLeft();
+      } else if (parent.getRight() !== null && parent.getRight()!.getVal() === val) {
+        current = parent.getRight();
+      }
+    }
+  }
+
+  // If current is null after this point, the node to delete doesn't exist
+  if (current === null) {
+    console.log(`Node with value ${val} doesn't exist in the tree`);
+    return tree;
+  }
+
+  // Case 1: Node to delete is a leaf node (no children)
+  if (current.getRight() === null && current.getLeft() === null) {
+    if (parent === null) {
+      // If the node to delete is the root node
+      return null;
+    } else if (parent.getLeft() === current) {
+      parent.setLeft(null);
+    } else {
+      parent.setRight(null);
+    }
+    return tree;
+  }
+
+  // Case 2: Node to delete has only one child
+  if (current.getRight() === null) {
+    if (parent !== null) {
+      if (parent.getLeft() === current) {
+        parent.setLeft(current.getLeft());
       } else {
-          parent = result;
-          if (parent !== null) {
-              if (parent.getLeft() !== null && parent.getLeft()!.getVal() === val) {
-                  current = parent.getLeft();
-              } else if (parent.getRight() !== null && parent.getRight()!.getVal() === val) {
-                  current = parent.getRight();
-              }
-          }
+        parent.setRight(current.getLeft());
       }
-
-      // If current is null after this point, it means the node to be deleted doesn't exist
-      if (current === null) {
-          console.log(`Node with value ${val} doesn't exist in the tree`);
-          return tree;
+    } else {
+      // If the node to delete is the root node
+      tree = tree.getLeft();
+    }
+    return tree;
+  } else if (current.getLeft() === null) {
+    if (parent !== null) {
+      if (parent.getLeft() === current) {
+        parent.setLeft(current.getRight());
+      } else {
+        parent.setRight(current.getRight());
       }
+    } else {
+      // If the node to delete is the root node
+      tree = tree.getRight();
+    }
+    return tree;
+  }
 
-      // Case 1: Node to delete is a leaf node (no children)
-      if (current.getRight() === null && current.getLeft() === null) {
-          if (parent === null) {
-              // If the node to delete is the root node
-              return null;
-          } else if (parent.getLeft() === current) {
-              parent.setLeft(null);
+  // Case 3: Node to delete has two children
+  if (current.getLeft() !== null && current.getRight() !== null) {
+    const smallestRightNode = this.searchSmallestNode(current.getRight()!);
+    if (smallestRightNode !== null) {
+      const smallestRightVal = smallestRightNode.getVal();
+      if (smallestRightVal !== null) {
+        current.setVal(smallestRightVal);
+
+        if (smallestRightNode === current.getRight()) {
+          if (current.getRight()!.getLeft() !== null) {
+            current.getRight()!.setLeft(null);
           } else {
-              parent.setRight(null);
+            current.setRight(current.getRight()!.getRight());
           }
-          return tree;
-      }
-
-      // Case 2: Node to delete has only one child
-      if (current.getRight() === null) {
-          // Only left child
-          if (parent !== null) {
-              if (parent.getLeft() === current) {
-                  parent.setLeft(current.getLeft());
-              } else {
-                  parent.setRight(current.getLeft());
-              }
+        } else {
+          if (smallestRightNode.getLeft() !== null) {
+            smallestRightNode.setLeft(smallestRightNode.getLeft()!.getRight());
           } else {
-              // If the node to delete is the root node
-              tree = tree.getLeft();
+            smallestRightNode.setLeft(smallestRightNode.getRight());
           }
-          return tree;
-      } else if (current.getLeft() === null) {
-          // Only right child
-          if (parent !== null) {
-              if (parent.getLeft() === current) {
-                  parent.setLeft(current.getRight());
-              } else {
-                  parent.setRight(current.getRight());
-              }
-          } else {
-              // If the node to delete is the root node
-              tree = tree.getRight();
-          }
-          return tree;
+        }
       }
+    }
 
-      // Case 3: Node to delete has two children
-      if (current.getLeft() !== null && current.getRight() !== null) {
-          const smallestRightNode = this.searchSmallestNode(current.getRight()!);
-          if (smallestRightNode !== null) {
-              const smallestRightVal = smallestRightNode.getVal();
-              if (smallestRightVal !== null) {
-                  current.setVal(smallestRightVal);
-
-                  if (smallestRightNode === current.getRight()) {
-                      if (current.getRight()!.getLeft() !== null) {
-                          current.getRight()!.setLeft(null);
-                      } else {
-                          current.setRight(current.getRight()!.getRight());
-                      }
-                  } else {
-                      if (smallestRightNode.getLeft() !== null) {
-                          smallestRightNode.setLeft(smallestRightNode.getLeft()!.getRight());
-                      } else {
-                          smallestRightNode.setLeft(smallestRightNode.getRight());
-                      }
-                  }
-              } else {
-                  console.error("Unexpected null value in smallestRightNode.getVal()");
-              }
-          } else {
-              console.error("Unexpected null smallestRightNode");
-          }
-
-          return tree;
-      }
+    return tree;
   }
 
   return tree;
 }
 
 
+public searchTreeDFS(tree: TreeNode | null, val: number, path: number[]): boolean {
+  if (tree === null) return false;
 
-  public searchTreeDFS(tree: TreeNode | null, val: number, path: number[]): boolean {
-    if (tree === null) return false;
+  const treeVal: number | null = tree.getVal();  
 
-    const treeVal: number | null = tree.getVal();  
+  if (treeVal !== null) {  
+    path.push(treeVal); 
+    if (treeVal === val) return true; 
 
-    if (treeVal !== null) {  
-        path.push(treeVal);
-        
-        if (treeVal === val) return true;
+    // Recursively search the left and right subtrees
+    if (this.searchTreeDFS(tree.getLeft(), val, path)) return true;
+    if (this.searchTreeDFS(tree.getRight(), val, path)) return true;
 
-        if (this.searchTreeDFS(tree.getRight(), val, path)) return true;
-        if (this.searchTreeDFS(tree.getLeft(), val, path)) return true;
+    path.pop();  
+  }
 
-        path.pop();  
-    }
-
-    return false;
+  return false;
 }
+
 
   public searchSmallestNode(tree: TreeNode): TreeNode {
       let treeNode = tree;
@@ -313,25 +294,7 @@ public deleteNode(tree: TreeNode | null, val: number): TreeNode | null {
       }
       return treeNode;
   }
-  public treeToString(tree: TreeNode | null): string {
-    if (tree === null) {
-      return 'Tree is empty';
-    }
-    let result: string = '';
-    const stack: TreeNode[] = [];
-    let current: TreeNode | null = tree;
-
-    while (current !== null || stack.length > 0) {
-      while (current !== null) {
-        result += current.getVal() + ' ';
-        stack.push(current);
-        current = current.getLeft();
-      }
-      current = stack.pop()!;
-      current = current.getRight();
-    }
-    return result;
-  }
+  
 }
 
 

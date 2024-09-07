@@ -1,16 +1,17 @@
 <div id="titre">{{title}}</div>
 <div class="container1">
-  <button  class="btn" (Onclick)="addNode()">Add Node</button>
-    <input [(ngModel)]="newValue" type="number" placeholder="Enter node value" />
-  <button (OnClick)="deleteNode()" class="btn">Delete Node</button>
-    <input [(ngModel)]="newValue" type="number" placeholder="Enter node value" />
-  <button (OnClick)="searchNode()" class="btn">Search DFS</button>
-    <input [(ngModel)]="newValue" type="number" placeholder="Enter node value" />
-
+  <input [(ngModel)]="newValue" type="number" placeholder="Enter node value" />
+  <button class="btn" (click)="addNode()">Add Node</button>
+  <button class="btn" (click)="deleteNode()">Delete Node</button>
+  <button class="btn" (click)="searchNode()">Search DFS</button>
 </div>
-<div class="container" >
-  <h2>Tree Visualization:</h2>
+
+<div class="container">
+  <h1>Tree Visualization:</h1>
   <div class="tree-container" *ngIf="tree">
-    <app-tree-node  [node]="tree"></app-tree-node>
+    <app-tree-node [node]="tree"></app-tree-node>
+  </div>
+  <div id="search-results">
+    Search Path: <strong>{{ displayPath }}</strong>
   </div>
 </div>

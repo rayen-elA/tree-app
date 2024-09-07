@@ -1,13 +1,17 @@
-<div *ngIf="node">
-    <div class="node">
-      {{ node.getVal() }}
+<div class="tree-node">
+  <div class="node">
+    {{ node?.getVal() }}
+  </div>
+
+  <div class="children">
+ 
+    <div class="child left" *ngIf="node?.getLeft()">
+      <app-tree-node [node]="node?.getLeft() ?? null"></app-tree-node>
     </div>
-    <div class="children">
-      <div class="child" *ngIf="node.getLeft()">
-        <app-tree-node [node]="node.getLeft()"></app-tree-node>
-      </div>
-      <div class="child" *ngIf="node.getRight()">
-        <app-tree-node [node]="node.getRight()"></app-tree-node>
-      </div>
+    
+   
+    <div class="child right" *ngIf="node?.getRight()">
+      <app-tree-node [node]="node?.getRight() ?? null"></app-tree-node>
     </div>
   </div>
+</div>
